@@ -28,9 +28,19 @@ jobs:
       - run:
           name: test build
           command: |
-            npm i
             npm run test
           
+  scan:
+    docker:
+      - image: circleci/node:14.7.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [build]
+      - run:
+          name: test build
+          command: |
+            npm audit --audit-level=critical
 
 workflows:
   default:
@@ -38,3 +48,5 @@ workflows:
       - build
       - test:
           requires: [build]
+      - scan:
+          requires: [test]          
