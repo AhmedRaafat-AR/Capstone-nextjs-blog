@@ -12,11 +12,10 @@ jobs:
       - run:
           name: install dependencies and build
           command: |
-            pwd
             npm i
             npm run build                  
       - save_cache:
-          paths: [node_modules]
+          paths: [repo/node_modules]
           key: build
  
   test:
@@ -47,7 +46,7 @@ workflows:
   default:
     jobs:
       - build
-      #- test:
-      #    requires: [build]
-      #- scan:
-      #    requires: [test]          
+      - test:
+          requires: [build]
+      - scan:
+          requires: [test]          
