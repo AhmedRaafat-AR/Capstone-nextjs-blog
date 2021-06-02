@@ -28,6 +28,7 @@ jobs:
       - run:
           name: test build
           command: |
+            ls
             npm run test
           
   scan:
