@@ -8,15 +8,15 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [b-key]
+          keys: [build]
       - run:
           name: install dependencies and build
           command: |
             npm i
             npm run build                  
       - save_cache:
-          paths: [node_modules/]
-          key: b-key
+          paths: [node_modules]
+          key: build
  
   test:
     docker:
@@ -24,7 +24,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [b-key]
+          keys: [build]
       - run:
           name: test build
           command: |
@@ -37,7 +37,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [b-key]
+          keys: [build]
       - run:
           name: test build
           command: |
