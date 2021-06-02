@@ -8,7 +8,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [build] 
+          keys: [b_key] 
       - run:
           name: install dependencies and build
           command: |
@@ -16,7 +16,7 @@ jobs:
             npm run build                  
       - save_cache:
           paths: [node_modules]
-          key: build
+          key: b_key
  
   test:
     docker:
@@ -24,20 +24,19 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [build]
+          keys: [b_key]
       - run:
           name: test build
           command: |
-            ls
             npm run test
-          
+            
   scan:
     docker:
       - image: circleci/node:14.7.0
     steps:
       - checkout
       - restore_cache:
-          keys: [build]
+          keys: [b_key]
       - run:
           name: test build
           command: |
