@@ -18,7 +18,7 @@ jobs:
           paths: [node_modules]
           key: build
  
-   test:
+  test:
     docker:
       - image: circleci/node:14.7.0
     steps:
