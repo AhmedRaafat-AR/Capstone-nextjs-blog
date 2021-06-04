@@ -1,5 +1,16 @@
 version: 2.1
 
+commands:
+  destroy-environment:
+    description: Destroy ec2 cloudformation stacks given a workflow ID.
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name "nextjs-backend"
+
+
 jobs:
   build:
     docker:
@@ -51,6 +62,46 @@ jobs:
             yarn set version latest
             yarn audit --audit-level=critical
 
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: install dependencies
+          command: |
+            yum -y install tar gzip
+      - run:
+          name: Ensure EC2 exists
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --tags name=nextjs \
+              --stack-name "nextjs-backend"
+      - run:
+          name: Add EC2 ip to ansible inventory
+          command: |
+            cd .circleci/ansible
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=Nextjs" --output text >> inventory.txt
+            cp inventory.txt ~/
+            cat ~/inventory.txt  
+      - run:
+          name: create memstash for EC2 dns-name
+          command: |
+            ec2url=`aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicDnsName' \
+            --filters "Name=tag:Name,Values=Nextjs" --output text`
+
+            curl -H "Content-Type: text/plain" \
+              -H "token: 0f745c33-38cb-4caa-bcfe-4e221d570a3a" \
+              --request PUT --data "$ec2url" https://api.memstash.io/values/backend-dnsname-${CIRCLE_WORKFLOW_ID}   
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - inventory.txt
+      - destroy-environment
 
 workflows:
   default:
@@ -59,4 +110,6 @@ workflows:
       - test:
           requires: [build]
       - scan:
-          requires: [test]               
+          requires: [test]
+      - deploy-infrastructure:
+          requires: [test, scan]                   
