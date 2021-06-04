@@ -1,0 +1,12 @@
+---
+- name: "update apt package."
+  become: yes
+  apt:
+    update-cache: yes
+
+- name: "upgrade apt package."
+  become: yes
+  apt:
+    upgrade: "yes"
+
+
