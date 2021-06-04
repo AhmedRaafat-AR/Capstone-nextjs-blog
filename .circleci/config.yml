@@ -8,15 +8,15 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-deps-{{ checksum "package-lock.json" }}
-            - v1-deps-
+            - v2-deps-{{ checksum "yarn.lock" }}
+            - v2-deps-
       - run:
           name: install dependencies and build
           command: |
-            npm i
-            npm run build                  
+            yarn install
+            yarn run build                  
       - save_cache:
-          key: v1-deps-{{ checksum "package-lock.json" }}
+          key: v1-deps-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
  
@@ -41,12 +41,13 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-deps-{{ checksum "package-lock.json" }}
-            - v1-deps-
+            - v2-deps-{{ checksum "yarn.lock" }}
+            - v2-deps-
       - run:
           name: test build
           command: |
-            npm audit --audit-level=critical
+            yarn audit --audit-level=critical
+
 
 workflows:
   default:
@@ -55,4 +56,4 @@ workflows:
       - test:
           requires: [build]
       - scan:
-          requires: [test]          
+          requires: [test]               
