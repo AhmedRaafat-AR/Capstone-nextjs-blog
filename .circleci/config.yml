@@ -103,6 +103,29 @@ jobs:
             - inventory.txt
       - destroy-environment
 
+  configure-infrastructure:
+    docker:
+      - image: contentwisetv/ansible-aws
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["16:63:7e:a5:10:d3:0b:34:02:fd:bc:29:4f:7a:01:73"]
+      - run:
+          name: Install dependencies
+          command: |
+            apk --update add tar gzip
+      - attach_workspace:
+          at: ~/            
+      - run:
+          name: Configure server
+          environment:
+            ANSIBLE_HOST_KEY_CHECKING: False
+          command: |
+            cd .circleci/ansible 
+            ansible-playbook configure-server.yml -i ~/inventory.txt
+      - destroy-environment
+
+
 workflows:
   default:
     jobs:
@@ -112,4 +135,6 @@ workflows:
       - scan:
           requires: [test]
       - deploy-infrastructure:
-          requires: [test, scan]                   
+          requires: [test, scan]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]                             

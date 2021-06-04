@@ -9,4 +9,14 @@
   apt:
     upgrade: "yes"
 
+- name: "Install Docker"
+  shell: |
+    sudo apt-get install docker.io -y
+    docker --version
+
+- name: "Install MiniKube"
+  shell: |
+    curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    sudo install minikube-linux-amd64 /usr/local/bin/minikube
+    which minikube
 
