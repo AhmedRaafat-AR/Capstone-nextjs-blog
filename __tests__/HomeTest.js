@@ -16,4 +16,4 @@ it("Renders appropriately", () => {
     expect(
       screen.getByRole("heading", { name: "Welcome to Next.js!" })
     ).toBeInTheDocument();
-  });
+  })x;
