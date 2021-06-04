@@ -14,8 +14,8 @@ jobs:
           name: install dependencies and build
           command: |
             yarn set version latest
-            yarn install
-            yarn run build                  
+            yarn install --frozen-lockfile
+            yarn build && yarn install --production --ignore-scripts --prefer-offline                  
       - save_cache:
           key: v2-deps-{{ checksum "yarn.lock" }}
           paths:
