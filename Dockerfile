@@ -1,24 +1,36 @@
-FROM python:3.7.3-stretch
+# Install dependencies only when needed
+*FROM node:alpine AS deps
 
-## Step 1:
-# Create a working directory
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+
+# Rebuild the source code only when needed
+FROM node:alpine AS builder
+WORKDIR /app
+COPY . .
+COPY --from=deps /app/node_modules ./node_modules
+RUN yarn build && yarn install --production --ignore-scripts --prefer-offline
+
+# Production image, copy all the files and run next
+FROM node:alpine AS runner
 WORKDIR /app
 
-## Step 2:
-# Copy source code to working directory
-COPY . app.py /app/
+ENV NODE_ENV production
 
-## Step 3:
-# Install packages from requirements.txt
-# hadolint ignore=DL3013
-RUN pip install --upgrade pip &&\
-    pip install --trusted-host pypi.python.org -r requirements.txt
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
 
-## Step 4:
-# Expose port 80
-EXPOSE 80
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
 
-## Step 5:
-# Run app.py at container launch
-CMD ["python", "app.py"]
+USER nextjs
 
+EXPOSE 3000
+
+ENV NEXT_TELEMETRY_DISABLED 1
+
+CMD ["yarn", "start"]
