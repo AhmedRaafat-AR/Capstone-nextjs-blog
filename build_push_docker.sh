@@ -15,8 +15,8 @@ aws ecr-public get-login-password --region us-east-1 | docker login --username A
 
 # Step 4:  
 # tag
-docker tag nextjs:latest public.ecr.aws/y5l2b5h6/nextjs:latest
+docker tag nextjs public.ecr.aws/y5l2b5h6/nextjs:green
 
 # Step 5:
 # Push image to a AWS repository
-docker push public.ecr.aws/y5l2b5h6/nextjs:latest
+docker push public.ecr.aws/y5l2b5h6/nextjs:green
