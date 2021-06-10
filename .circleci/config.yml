@@ -83,10 +83,15 @@ jobs:
           name: Install dependencies
           command: |
             apt update 
-            apt install curl unzip docker.io -y
+            apt install curl perl apt-utils unzip docker.io -y
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
-            ./aws/install  
+            ./aws/install
+      - run:
+          name: add docker group
+          command: |
+            groupadd docker
+            usermod -aG docker $USER        
       - run:
           name: Build and Push Docker Nextjs-green Image to a Aws Repo 
           command: |
