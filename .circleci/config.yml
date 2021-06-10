@@ -82,11 +82,11 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt update 
-            sudo install unzip docker.io -y
+            apt update 
+            install unzip docker.io -y
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
-            sudo ./aws/install  
+            ./aws/install  
       - run:
           name: Build and Push Docker Nextjs-green Image to a Aws Repo 
           command: |
