@@ -70,6 +70,7 @@ jobs:
       - run:
           name: Lint Dokcerfile
           command: |
+            apk update && apk add make
             make install
             make lint          
 
