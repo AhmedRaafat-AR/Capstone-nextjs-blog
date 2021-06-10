@@ -57,11 +57,54 @@ jobs:
             - v2-deps-{{ checksum "yarn.lock" }}
             - v2-deps-
       - run:
-          name: test build
+          name: check audit level
           command: |
             yarn set version latest
             yarn audit --audit-level=critical
 
+  lint-docker-file:
+    docker:
+      - image: alpine:latest
+    steps:
+      - checkout
+      - run:
+          name: Lint Dokcerfile
+          command: |
+            make install
+            make lint          
+
+  build-push-docker-image:
+    docker:
+      - image: ubuntu:latest
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt update 
+            sudo install unzip docker.io -y
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install  
+      - run:
+          name: Build and Push Docker Nextjs-green Image to a Aws Repo 
+          command: |
+            chmod +x build_push_docker.sh
+            ./build_push_docker.sh
+      - run:
+          name: Create Docker Container
+          command: |
+            docker run -d -p 3030:3000 public.ecr.aws/y5l2b5h6/nextjs:green
+      - run:
+          name: Test Nextjs:Green App
+          command: | 
+            URL="localhost:3030"            
+
+            if curl -s ${URL} | grep "Green"
+            then
+              echo "Successful"
+            fi            
+         
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -125,6 +168,26 @@ jobs:
             ansible-playbook configure-server.yml -i ~/inventory.txt
       - destroy-environment
 
+  deploy-nextjs-app:
+    docker:
+      - image: sleavely/node-awscli:14.x
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["16:63:7e:a5:10:d3:0b:34:02:fd:bc:29:4f:7a:01:73"]
+      - attach_workspace:
+          at: ~/        
+      - run:
+          name: Install dependencies
+          command: |
+            apt-get update
+            apt-get install -yy less python3 docker.io
+            curl https://bootstrap.pypa.io/pip/3.5/get-pip.py -o get-pip.py
+            python3 get-pip.py
+            python3 -m pip install ansible
+            ansible --help
+            docker --version
+                           
 
 workflows:
   default:
@@ -134,7 +197,13 @@ workflows:
           requires: [build]
       - scan:
           requires: [test]
-      - deploy-infrastructure:
-          requires: [test, scan]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]                             
+      - lint-docker-file:
+          requires: [scan]
+      - build-push-docker-image:
+          requires: [lint-docker-file]                    
+      #- deploy-infrastructure:
+      #    requires: [build-push-docker-image]
+      #- configure-infrastructure:
+      #    requires: [deploy-infrastructure]
+      #- deploy-nextjs-app:
+      #    requires: [configure-infrastructure]                                
