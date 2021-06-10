@@ -1,2 +1,16 @@
 ---
+- name: "Copy deployments and services files"
+  copy:
+    src: files/
+    dec: ~/
+    
+- name: "Authenticate Docker client to a Aws registry"
+  shell: |
+    aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/y5l2b5h6  
 
+- name: "Start MiniKube"
+  shell: |
+    sudo -i
+    minikube start --driver=none
+    minikube kubectl -- get pods -A
+    
