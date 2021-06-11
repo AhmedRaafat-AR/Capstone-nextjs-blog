@@ -5,6 +5,7 @@
     dest: ~/
 
 - name: "Build and Push Docker Nextjs-green Image to a Aws Repo"
+  become: true
   shell: |
     chmod +x build_push_docker.sh
     ./build_push_docker.sh    
