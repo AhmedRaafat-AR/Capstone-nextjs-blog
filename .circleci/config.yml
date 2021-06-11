@@ -89,7 +89,8 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags name=nextjs \
-              --stack-name "nextjs-backend"
+              --stack-name "nextjs-backend" \
+              --capabilities CAPABILITY_NAMED_IAM
       - run:
           name: Add EC2 ip to ansible inventory
           command: |
