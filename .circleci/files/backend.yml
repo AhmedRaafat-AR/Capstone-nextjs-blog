@@ -35,8 +35,8 @@ Resources:
         - Ref: InstanceSecurityGroup
       KeyName: udacity
       IamInstanceProfile:
-        - Arn: arn:aws:iam::309419771590:instance-profile/eksworkshop-admin
-          Name:  eksworkshop-admin
+          Arn: arn:aws:iam::309419771590:instance-profile/eksworkshop-admin
+          Name: eksworkshop-admin
         #- Ref: ProfileWithRolesForOurApp       
       ImageId: ami-03d5c68bab01f3496
       Tags:
