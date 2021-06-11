@@ -2,7 +2,7 @@
 - name: "Copy deployments and services files"
   copy:
     src: files/
-    dec: ~/
+    dest: ~/
 
 - name: "Build and Push Docker Nextjs-green Image to a Aws Repo"
   shell: |
