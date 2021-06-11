@@ -154,13 +154,17 @@ jobs:
             ansible --help
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
-            ./aws/install        
+            ./aws/install
+      - run:
+          name: copy package.json yarn.lock
+          command: |
+            cp Dockerfile package.json yarn.lock ~/project/.circleci/ansible/roles/deploy/files/              
       - run:
           name: ssh to ec2 for deploy
           command: |
             cd .circleci/ansible 
             ansible-playbook deploy-backend.yml -i ~/inventory.txt
-      #- destroy-environment                  
+      - destroy-environment                  
                            
 
 workflows:
