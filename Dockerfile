@@ -1,10 +1,9 @@
 # Install dependencies only when needed
 FROM node:alpine AS deps
-
+# hadolint ignore=DL3018
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json yarn.lock ./
-# hadolint ignore=DL3018
 RUN yarn install --frozen-lockfile
 
 # Rebuild the source code only when needed
