@@ -7,8 +7,14 @@
 - name: "Build and Push Docker Nextjs-green Image to a Aws Repo"
   become: true
   shell: |
-    chmod +x build_push_docker.sh
-    ./build_push_docker.sh    
+    docker build -t nextjs .
+    docker image ls
+    aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/y5l2b5h6
+    docker tag nextjs public.ecr.aws/y5l2b5h6/nextjs:green
+    docker push public.ecr.aws/y5l2b5h6/nextjs:green
+    
+    #chmod +x build_push_docker.sh
+    #./build_push_docker.sh    
 
 #- name: "Authenticate Docker client to a Aws registry"
 #  shell: |
