@@ -158,7 +158,8 @@ jobs:
       - run:
           name: copy package.json yarn.lock
           command: |
-            cp Dockerfile package.json yarn.lock ~/project/.circleci/ansible/roles/deploy/files/              
+           tar -czf config.tar.gz Dockerfile package.json yarn.lock pages/ public/ 
+           cp config.tar.gz ~/project/.circleci/ansible/roles/deploy/files/              
       - run:
           name: ssh to ec2 for deploy
           command: |
