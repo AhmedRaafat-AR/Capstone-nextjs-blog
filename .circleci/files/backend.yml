@@ -17,11 +17,11 @@ Resources:
           ToPort: 32321
           CidrIp: 0.0.0.0/0
 
-  InstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties: 
-      Roles:
-        - eksworkshop-admin
+  #ProfileWithRolesForOurApp:
+  #  Type: AWS::IAM::InstanceProfile
+  #  Properties: 
+  #    Roles:
+  #      - eksworkshop-admin
 
   EC2Instance:
     Type: AWS::EC2::Instance
@@ -35,8 +35,8 @@ Resources:
         - Ref: InstanceSecurityGroup
       KeyName: udacity
       IamInstanceProfile:
-          Arn: !GetAtt InstanceProfile.Arn
-          Name: !GetAtt InstanceProfile.Name    
+          Arn: arn:aws:iam::309419771590:instance-profile/eksworkshop-admin
+          Name: eksworkshop-admin    
       ImageId: ami-03d5c68bab01f3496
       Tags:
         - Key: Name
