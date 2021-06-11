@@ -160,7 +160,7 @@ jobs:
           command: |
             cd .circleci/ansible 
             ansible-playbook deploy-backend.yml -i ~/inventory.txt
-      - destroy-environment                  
+      #- destroy-environment                  
                            
 
 workflows:
