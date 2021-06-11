@@ -4,6 +4,11 @@
     src: files/
     dest: ~/
 
+- name: Extract config.tar.gz
+  ansible.builtin.unarchive:
+    src: config.tar.gz
+    dest: ~/
+
 #- name: "Build and Push Docker Nextjs-green Image to a Aws Repo"
 #  become: true
 #  shell: |
