@@ -4,22 +4,23 @@
     src: files/
     dest: ~/
 
-#- name: "Build and Push Docker Nextjs-green Image to a Aws Repo"
-#  become: true
-#  shell: |
-#    docker build -t nextjs .
+- name: "Build and Push Docker Nextjs-green Image to a Aws Repo"
+  become: true
+  shell: |
+    chmod +x build_push_docker.sh
+    ./build_push_docker.sh
 
 
 #- name: "Authenticate Docker client to a Aws registry"
 #  shell: |
 #    aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/y5l2b5h6  
 
-#- name: "Start MiniKube"
-#  shell: |
-#    sudo -i
-#    minikube start --driver=none
+- name: "Start MiniKube"
+  shell: |
+    sudo -i
+    minikube start --driver=none
 
-#- name: "Deploy Nextjs Blue App"
-#  shell: |
-#    minikube kubectl -- apply -f nextjs-d.yml
-#    minikube kubectl -- apply -f nextjs-s.yml
+- name: "Deploy Nextjs Blue App"
+  shell: |
+    minikube kubectl -- apply -f nextjs-d.yml
+    minikube kubectl -- apply -f nextjs-s.yml
