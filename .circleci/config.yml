@@ -73,39 +73,6 @@ jobs:
             apk update && apk add make
             make install
             make lint          
-
-  build-push-docker-image:
-    docker:
-      - image: ubuntu:latest
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            apt update 
-            apt install curl perl apt-utils unzip docker.io -y
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            ./aws/install       
-      - run:
-          name: Build and Push Docker Nextjs-green Image to a Aws Repo 
-          command: |
-            newgrp root docker
-            chmod +x build_push_docker.sh
-            ./build_push_docker.sh
-      - run:
-          name: Create Docker Container
-          command: |
-            docker run -d -p 3030:3000 public.ecr.aws/y5l2b5h6/nextjs:green
-      - run:
-          name: Test Nextjs:Green App
-          command: | 
-            URL="localhost:3030"            
-
-            if curl -s ${URL} | grep "Green"
-            then
-              echo "Successful"
-            fi            
          
   deploy-infrastructure:
     docker:
@@ -172,7 +139,7 @@ jobs:
 
   deploy-nextjs-app:
     docker:
-      - image: sleavely/node-awscli:14.x
+      - image: python:latest
     steps:
       - checkout
       - add_ssh_keys:
@@ -182,13 +149,14 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt-get update
-            apt-get install -yy less python3 docker.io
-            curl https://bootstrap.pypa.io/pip/3.5/get-pip.py -o get-pip.py
-            python3 get-pip.py
             python3 -m pip install ansible
             ansible --help
-            docker --version
+      - run:
+          name: ssh to ec2 for deploy
+          command: |
+            cd .circleci/ansible 
+            ansible-playbook deploy-backend.yml -i ~/inventory.txt
+      - destroy-environment                  
                            
 
 workflows:
@@ -200,12 +168,10 @@ workflows:
       - scan:
           requires: [test]
       - lint-docker-file:
-          requires: [scan]
-      - build-push-docker-image:
-          requires: [lint-docker-file]                    
-      #- deploy-infrastructure:
-      #    requires: [build-push-docker-image]
-      #- configure-infrastructure:
-      #    requires: [deploy-infrastructure]
-      #- deploy-nextjs-app:
-      #    requires: [configure-infrastructure]                                
+          requires: [scan]              
+      - deploy-infrastructure:
+          requires: [lint-docker-file]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - deploy-nextjs-app:
+          requires: [configure-infrastructure]                                
