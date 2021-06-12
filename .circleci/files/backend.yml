@@ -13,6 +13,10 @@ Resources:
           ToPort: 22
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
+          FromPort: 3030
+          ToPort: 3030
+          CidrIp: 0.0.0.0/0          
+        - IpProtocol: tcp
           FromPort: 32321
           ToPort: 32321
           CidrIp: 0.0.0.0/0
