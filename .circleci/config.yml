@@ -225,25 +225,25 @@ jobs:
             cd .circleci/ansible 
             ansible-playbook update-image.yml -i ~/inventory.txt
       - destroy-environment
-        
+
 
 workflows:
   default:
     jobs:
       - build
-      - test:
-          requires: [build]
-      - scan:
-          requires: [test]
-      - lint-docker-file:
-          requires: [scan]              
-      - deploy-infrastructure:
-          requires: [lint-docker-file]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - deploy-nextjs-app:
-          requires: [configure-infrastructure]
-      - smoke-test:
-          requires: [deploy-nextjs-app]
-      - update-deployment-image:
-          requires: [smoke-test]                                                              
+      #- test:
+      #    requires: [build]
+      #- scan:
+      #    requires: [test]
+      #- lint-docker-file:
+      #    requires: [scan]              
+      #- deploy-infrastructure:
+      #    requires: [lint-docker-file]
+      #- configure-infrastructure:
+      #    requires: [deploy-infrastructure]
+      #- deploy-nextjs-app:
+      #    requires: [configure-infrastructure]
+      #- smoke-test:
+      #    requires: [deploy-nextjs-app]
+      #- update-deployment-image:
+      #    requires: [smoke-test]                                                              
