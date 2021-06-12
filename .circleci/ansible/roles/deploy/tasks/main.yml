@@ -15,11 +15,6 @@
     chmod +x build_push_docker.sh
     ./build_push_docker.sh
 
-- name: "Create Nextjs Green App Container"
-  become: true
-  shell: |
-    docker run -d --name green -p 3030:3000 public.ecr.aws/y5l2b5h6/nextjs:green
-
 - name: "Start MiniKube"
   become: true
   shell: |
@@ -32,3 +27,7 @@
     minikube kubectl -- apply -f nextjs-d.yml
     minikube kubectl -- apply -f nextjs-s.yml
 
+- name: "Create Nextjs Green App Container"
+  become: true
+  shell: |
+    docker run -d --name green -p 3030:3000 public.ecr.aws/y5l2b5h6/nextjs:green
