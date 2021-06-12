@@ -197,7 +197,7 @@ jobs:
             then
               echo "Next.js! - Green"
             fi                
-      #- destroy-environment
+      - destroy-environment
 
 
 workflows:
