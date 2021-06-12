@@ -109,7 +109,7 @@ jobs:
 
             curl -H "Content-Type: text/plain" \
               -H "token: 0f745c33-38cb-4caa-bcfe-4e221d570a3a" \
-              --request PUT --data "$ec2url" https://api.memstash.io/values/backend-dnsname-${CIRCLE_WORKFLOW_ID}   
+              --request PUT --data "$ec2url" https://api.memstash.io/values/dnsname   
       - persist_to_workspace:
           root: ~/
           paths:
@@ -167,6 +167,28 @@ jobs:
             ansible-playbook deploy-backend.yml -i ~/inventory.txt
       - destroy-environment                  
                            
+  smoke-test:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum -y install curl
+      - run:
+          name: verify existing nextjs blue app.
+          command: |
+            ec2url=`curl -H "token: 0f745c33-38cb-4caa-bcfe-4e221d570a3a" \
+             --request GET https://api.memstash.io/values/dnsname`
+
+            curl -s http://${ec2url}:32321 | grep "Next.js! - Blue"   
+      - run:
+          name: nextjs green app smoke test.
+          command: |
+            curl -s http://${ec2url}:3030 | grep "Next.js! - Green"    
+      - destroy-environment
+
 
 workflows:
   default:
@@ -183,4 +205,6 @@ workflows:
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - deploy-nextjs-app:
-          requires: [configure-infrastructure]                                
+          requires: [configure-infrastructure]
+      - smoke-test:
+          requires: [deploy-nextjs-app]                                              
