@@ -1,0 +1,12 @@
+---
+- name: "Update Deployment image to Nextjs Green App"
+  become: true
+  shell: |
+    minikube kubectl -- set image deployment/nextjs-d \ 
+    nextjs=public.ecr.aws/y5l2b5h6/nextjs:green --record
+
+- name: "cleanup the smoke-test container"
+  become: true
+  shell: |
+    docker container stop green    
+
