@@ -182,11 +182,17 @@ jobs:
             ec2url=`curl -H "token: 0f745c33-38cb-4caa-bcfe-4e221d570a3a" \
              --request GET https://api.memstash.io/values/dnsname`
 
-            curl -s http://${ec2url}:32321 | grep "Next.js! - Blue"   
+            if curl -s ${ec2url}:32321 | grep "Next.js! - Blue"
+            then
+              echo "Next.js! - Blue"
+            fi               
       - run:
           name: nextjs green app smoke test.
           command: |
-            curl -s http://${ec2url}:3030 | grep "Next.js! - Green"    
+            if curl -s ${ec2url}:3030 | grep "Next.js! - Green"
+            then
+              echo "Next.js! - Green"
+            fi                
       #- destroy-environment
 
 
