@@ -224,7 +224,8 @@ jobs:
           command: |
             cd .circleci/ansible 
             ansible-playbook update-image.yml -i ~/inventory.txt
-      - destroy-environment  
+      - destroy-environment
+        
 
 workflows:
   default:
