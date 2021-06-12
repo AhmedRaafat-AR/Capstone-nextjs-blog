@@ -187,7 +187,7 @@ jobs:
           name: nextjs green app smoke test.
           command: |
             curl -s http://${ec2url}:3030 | grep "Next.js! - Green"    
-      - destroy-environment
+      #- destroy-environment
 
 
 workflows:
