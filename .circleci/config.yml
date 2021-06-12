@@ -193,12 +193,38 @@ jobs:
       - run:
           name: nextjs green app smoke test.
           command: |
+            ec2url=`curl -H "token: 9de9bfa8-b369-4852-b998-a98dd8377daa" \
+             --request GET https://api.memstash.io/values/dnsname`
+
             if curl -s ${ec2url}:3030 | grep -o "Next.js! - Green"
             then
               echo "Next.js! - Green"
             fi                
       - destroy-environment
 
+  update-deployment-image:
+    docker:
+      - image: python:latest
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["16:63:7e:a5:10:d3:0b:34:02:fd:bc:29:4f:7a:01:73"]
+      - attach_workspace:
+          at: ~/        
+      - run:
+          name: Install dependencies
+          command: |
+            python3 -m pip install ansible
+            ansible --help
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            ./aws/install 
+      - run:
+          name: ssh to ec2 for update deployment image to green app image
+          command: |
+            cd .circleci/ansible 
+            ansible-playbook update-image.yml -i ~/inventory.txt
+      - destroy-environment  
 
 workflows:
   default:
@@ -217,4 +243,6 @@ workflows:
       - deploy-nextjs-app:
           requires: [configure-infrastructure]
       - smoke-test:
-          requires: [deploy-nextjs-app]                                              
+          requires: [deploy-nextjs-app]
+      - update-deployment-image:
+          requires: [smoke-test]                                                              
